@@ -696,14 +696,33 @@ export default function Home() {
                   </button>
                 </Link>
 
-                {user?.role === "librarian" && (
-                  <button
-                    onClick={() => openIssueModal(book)}
-                    className="w-full rounded-lg bg-emerald-600 py-3 text-white transition hover:bg-emerald-700"
-                  >
-                    📕 Выдать книгу
-                  </button>
-                )}
+                {user?.role === "librarian" && (() => {
+                  const canIssueBook = book.book_copies?.some(
+                    (copy) => Number(copy.quantity) > 0
+                  )
+
+                  return (
+                    <button
+                      onClick={() => {
+                        if (!canIssueBook) return
+                        openIssueModal(book)
+                      }}
+                      disabled={!canIssueBook}
+                      title={
+                        canIssueBook
+                          ? "Выдать книгу"
+                          : "Нет доступных экземпляров для выдачи"
+                      }
+                      className={
+                        canIssueBook
+                          ? "w-full rounded-lg bg-emerald-600 py-3 text-white transition hover:bg-emerald-700"
+                          : "w-full cursor-not-allowed rounded-lg bg-slate-300 py-3 text-slate-500"
+                      }
+                    >
+                      {canIssueBook ? "📕 Выдать книгу" : "📕 Нет экземпляров"}
+                    </button>
+                  )
+                })()}
               </div>
             </div>
           ))}
